@@ -16,7 +16,7 @@ import FormToken from "./Components/FormToken";
 import ViewSoal from "./Components/ViewSoal";
 import ProtectedRoute from "./auth/protectRoute"; // Pastikan path ini sesuai dengan struktur folder Anda
 import Unauthorized from "./pages/Unauthorized"; 
-import ProtecLogin from "./pages/protecLogin"; 
+import ProtecLogin from "./pages/ProtecLogin"; 
 import SoalUjian from "./pages/SoalUjian"; // Pastikan path ini sesuai dengan struktur folder Anda
 import FormMapel from "./Components/FormMapel"; 
 import SuccessPage from "./Components/SuccesPage";
