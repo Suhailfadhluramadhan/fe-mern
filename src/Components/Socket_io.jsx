@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import io from 'socket.io-client';
+import React, { useEffect, useState } from "react";
+import io from "socket.io-client";
 
-const socket = io(import.meta.env.VITE_API_SERVER);
+const socket = io(import.meta.env.VITE_API_SERVER, {
+  path: "/proyek1/socket.io",
+  transports: ["websocket", "polling"],
+  withCredentials: true,
+});
 
 const Socket_io = () => {
   const [chatMessages, setChatMessages] = useState([]);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [joined, setJoined] = useState(false);
 
   const userData = JSON.parse(sessionStorage.getItem("user")) || {};
@@ -13,22 +17,28 @@ const Socket_io = () => {
   const role = userData?.role;
 
   useEffect(() => {
-    socket.on('chat-message', (msg) => {
+    socket.on("chat-message", (msg) => {
       setChatMessages((prev) => [...prev, msg]);
     });
 
-    socket.on('user-joined', (username) => {
-      setChatMessages((prev) => [...prev, { system: true, text: `${username} joined the conversation` }]);
+    socket.on("user-joined", (username) => {
+      setChatMessages((prev) => [
+        ...prev,
+        { system: true, text: `${username} joined the conversation` },
+      ]);
     });
 
-    socket.on('user-left', (username) => {
-      setChatMessages((prev) => [...prev, { system: true, text: `${username} left the conversation` }]);
+    socket.on("user-left", (username) => {
+      setChatMessages((prev) => [
+        ...prev,
+        { system: true, text: `${username} left the conversation` },
+      ]);
     });
 
     return () => {
-      socket.off('chat-message');
-      socket.off('user-joined');
-      socket.off('user-left');
+      socket.off("chat-message");
+      socket.off("user-joined");
+      socket.off("user-left");
     };
   }, []);
 
@@ -37,12 +47,12 @@ const Socket_io = () => {
       alert("Nama tidak ditemukan di sessionStorage");
       return;
     }
-    socket.emit('join', name);
+    socket.emit("join", name);
     setJoined(true);
   };
 
   const handleExit = () => {
-    socket.emit('leave', name);
+    socket.emit("leave", name);
     setJoined(false);
     setChatMessages([]);
   };
@@ -50,8 +60,8 @@ const Socket_io = () => {
   const handleSend = () => {
     if (!message.trim()) return;
     const msg = { name, role, text: message };
-    socket.emit('chat-message', msg);
-    setMessage('');
+    socket.emit("chat-message", msg);
+    setMessage("");
   };
 
   if (!joined) {
@@ -89,27 +99,27 @@ const Socket_io = () => {
       >
         {chatMessages.map((msg, idx) =>
           msg.system ? (
-            <p
-              key={idx}
-              className="text-center text-gray-500 text-sm italic"
-            >
+            <p key={idx} className="text-center text-gray-500 text-sm italic">
               {msg.text}
             </p>
           ) : (
             <div
               key={idx}
-              className={`flex ${msg.name === name ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${
+                msg.name === name ? "justify-end" : "justify-start"
+              }`}
             >
               <div
                 className={`max-w-[80%] px-4 py-2 rounded-lg shadow ${
                   msg.name === name
-                    ? 'bg-green-700 text-white rounded-br-none'
-                    : 'bg-black text-white rounded-bl-none'
+                    ? "bg-green-700 text-white rounded-br-none"
+                    : "bg-black text-white rounded-bl-none"
                 }`}
               >
                 {msg.name !== name && (
                   <p className="text-sm font-semibold text-purple-300">
-                    {msg.name} <span className="text-xs text-gray-400">({msg.role})</span>
+                    {msg.name}{" "}
+                    <span className="text-xs text-gray-400">({msg.role})</span>
                   </p>
                 )}
                 <p className="text-sm mt-1">{msg.text}</p>
