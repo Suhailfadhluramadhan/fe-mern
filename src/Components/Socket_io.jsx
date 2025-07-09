@@ -6,51 +6,49 @@ const Socket_io = () => {
   const [message, setMessage] = useState("");
   const [joined, setJoined] = useState(false);
 
+  const socketRef = useRef(null);
+
   const userData = JSON.parse(sessionStorage.getItem("user")) || {};
   const name = userData?.nama;
   const role = userData?.role;
 
-  // Pakai useRef untuk menyimpan instance socket agar stabil selama lifecycle komponen
-  const socketRef = useRef(null);
-
   useEffect(() => {
-    // Inisialisasi socket client sekali saat komponen mount
-    const socket = io(import.meta.env.VITE_API_SERVER, {
+    socketRef.current = io(import.meta.env.VITE_API_SERVER, {
       path: "/proyek1/socket.io",
       transports: ["websocket", "polling"],
       withCredentials: true,
     });
 
-    socketRef.current = socket;
+    socketRef.current.on("connect", () =>
+      console.log("🟢 Socket connected:", socketRef.current.id)
+    );
+    socketRef.current.on("connect_error", (err) =>
+      console.error("🔴 Connect error:", err)
+    );
+    socketRef.current.on("disconnect", (reason) =>
+      console.log("🔴 Disconnected:", reason)
+    );
 
-    console.log("✅ API Server:", import.meta.env.VITE_API_SERVER);
-
-    socket.on("connect", () => console.log("🟢 Socket connected:", socket.id));
-    socket.on("connect_error", (err) => console.error("🔴 Connect error:", err));
-    socket.on("disconnect", (reason) => console.log("🔴 Disconnected:", reason));
-
-    socket.on("chat-message", (msg) => {
+    socketRef.current.on("chat-message", (msg) => {
       setChatMessages((prev) => [...prev, msg]);
     });
 
-    socket.on("user-joined", (username) => {
+    socketRef.current.on("user-joined", (username) => {
       setChatMessages((prev) => [
         ...prev,
         { system: true, text: `${username} joined the conversation` },
       ]);
     });
 
-    socket.on("user-left", (username) => {
+    socketRef.current.on("user-left", (username) => {
       setChatMessages((prev) => [
         ...prev,
         { system: true, text: `${username} left the conversation` },
       ]);
     });
 
-    // Cleanup: disconnect socket saat komponen unmount
     return () => {
-      socket.disconnect();
-      console.log("Socket disconnected on cleanup");
+      socketRef.current.disconnect();
     };
   }, []);
 
@@ -147,11 +145,6 @@ const Socket_io = () => {
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Ketik pesan..."
           className="flex-1 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSend();
-            }
-          }}
         />
         <button
           onClick={handleSend}
