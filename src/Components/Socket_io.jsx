@@ -10,13 +10,14 @@ const Socket_io = () => {
 
   const userData = JSON.parse(sessionStorage.getItem("user")) || {};
   const name = userData?.nama;
-  const role = userData?.role;
+  const role = userData?.role; 
+  const env= "https://projectss6.biz.id/proyek1";
 
   useEffect(() => {
     console.log("🔌 VITE_API_SERVER:", import.meta.env.VITE_API_SERVER);
-
-    socketRef.current = io(import.meta.env.VITE_API_SERVER, {
-      path: "/socket.io",
+console.log(env)
+    socketRef.current = io(env, {
+      path: "/proyek1/socket.io",
       transports: ["websocket", "polling"],
       withCredentials: true,
     });
