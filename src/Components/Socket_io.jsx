@@ -14,7 +14,7 @@ const Socket_io = () => {
 
   useEffect(() => {
     socketRef.current = io(import.meta.env.VITE_API_SERVER, {
-      path: "/proyek1/socket.io",
+      path: "/socket.io",
       transports: ["websocket", "polling"],
       withCredentials: true,
     });
