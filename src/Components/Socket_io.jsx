@@ -11,7 +11,7 @@ const Socket_io = () => {
   const userData = JSON.parse(sessionStorage.getItem("user")) || {};
   const name = userData?.nama;
   const role = userData?.role; 
-  const env= "https://projectss6.biz.id/proyek1";
+  const env= "https://projectss6.biz.id";
 
   useEffect(() => {
     console.log("🔌 VITE_API_SERVER:", import.meta.env.VITE_API_SERVER);
