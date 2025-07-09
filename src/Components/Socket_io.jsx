@@ -14,8 +14,7 @@ const Socket_io = () => {
   const env= "https://projectss6.biz.id";
 
   useEffect(() => {
-    console.log("🔌 VITE_API_SERVER:", import.meta.env.VITE_API_SERVER);
-console.log(env)
+    
     socketRef.current = io(env, {
       path: "/proyek1/socket.io",
       transports: ["websocket", "polling"],
@@ -23,7 +22,7 @@ console.log(env)
     });
 
     socketRef.current.on("connect", () =>
-      console.log("🟢 Socket connected:", socketRef.current.id)
+      console.log("🟢 Socket connected:", "selamat berhasil")
     );
     socketRef.current.on("connect_error", (err) =>
       console.error("🔴 Connect error:", err)
