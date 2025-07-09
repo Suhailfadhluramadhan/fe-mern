@@ -1,11 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import io from "socket.io-client";
-
-const socket = io(import.meta.env.VITE_API_SERVER, {
-  path: "/proyek1/socket.io",
-  transports: ["websocket", "polling"],
-  withCredentials: true,
-});
 
 const Socket_io = () => {
   const [chatMessages, setChatMessages] = useState([]);
@@ -16,17 +10,24 @@ const Socket_io = () => {
   const name = userData?.nama;
   const role = userData?.role;
 
+  // Pakai useRef untuk menyimpan instance socket agar stabil selama lifecycle komponen
+  const socketRef = useRef(null);
+
   useEffect(() => {
+    // Inisialisasi socket client sekali saat komponen mount
+    const socket = io(import.meta.env.VITE_API_SERVER, {
+      path: "/proyek1/socket.io",
+      transports: ["websocket", "polling"],
+      withCredentials: true,
+    });
+
+    socketRef.current = socket;
+
     console.log("✅ API Server:", import.meta.env.VITE_API_SERVER);
-    // kode socket lainnya...
 
     socket.on("connect", () => console.log("🟢 Socket connected:", socket.id));
-    socket.on("connect_error", (err) =>
-      console.error("🔴 Connect error:", err)
-    );
-    socket.on("disconnect", (reason) =>
-      console.log("🔴 Disconnected:", reason)
-    );
+    socket.on("connect_error", (err) => console.error("🔴 Connect error:", err));
+    socket.on("disconnect", (reason) => console.log("🔴 Disconnected:", reason));
 
     socket.on("chat-message", (msg) => {
       setChatMessages((prev) => [...prev, msg]);
@@ -46,10 +47,10 @@ const Socket_io = () => {
       ]);
     });
 
+    // Cleanup: disconnect socket saat komponen unmount
     return () => {
-      socket.off("chat-message");
-      socket.off("user-joined");
-      socket.off("user-left");
+      socket.disconnect();
+      console.log("Socket disconnected on cleanup");
     };
   }, []);
 
@@ -58,12 +59,12 @@ const Socket_io = () => {
       alert("Nama tidak ditemukan di sessionStorage");
       return;
     }
-    socket.emit("join", name);
+    socketRef.current.emit("join", name);
     setJoined(true);
   };
 
   const handleExit = () => {
-    socket.emit("leave", name);
+    socketRef.current.emit("leave", name);
     setJoined(false);
     setChatMessages([]);
   };
@@ -71,7 +72,7 @@ const Socket_io = () => {
   const handleSend = () => {
     if (!message.trim()) return;
     const msg = { name, role, text: message };
-    socket.emit("chat-message", msg);
+    socketRef.current.emit("chat-message", msg);
     setMessage("");
   };
 
@@ -146,6 +147,11 @@ const Socket_io = () => {
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Ketik pesan..."
           className="flex-1 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSend();
+            }
+          }}
         />
         <button
           onClick={handleSend}
