@@ -17,6 +17,11 @@ const Socket_io = () => {
   const role = userData?.role;
 
   useEffect(() => {
+    // FE
+socket.on("connect", () => console.log("🟢 Socket connected:", socket.id));
+socket.on("connect_error", (err) => console.error("🔴 Connect error:", err));
+socket.on("disconnect", (reason) => console.log("🔴 Disconnected:", reason));
+
     socket.on("chat-message", (msg) => {
       setChatMessages((prev) => [...prev, msg]);
     });
