@@ -16,7 +16,7 @@ const Socket_io = () => {
     console.log("🔌 VITE_API_SERVER:", import.meta.env.VITE_API_SERVER);
 
     socketRef.current = io(import.meta.env.VITE_API_SERVER, {
-      path: "/proyek1/socket.io",
+      path: "/socket.io",
       transports: ["websocket", "polling"],
       withCredentials: true,
     });
