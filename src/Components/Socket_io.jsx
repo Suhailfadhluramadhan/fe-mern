@@ -10,20 +10,20 @@ const Socket_io = () => {
 
   const userData = JSON.parse(sessionStorage.getItem("user")) || {};
   const name = userData?.nama;
-  const role = userData?.role; 
-  const env= "https://projectss6.biz.id";
+  const role = userData?.role;
+  const env = "https://projectss6.biz.id";
 
   useEffect(() => {
-    
     socketRef.current = io(env, {
       path: "/proyek1/socket.io",
       transports: ["websocket", "polling"],
       withCredentials: true,
     });
 
-    socketRef.current.on("connect", () =>
-      console.log("🟢 Socket connected:", "selamat berhasil")
-    );
+    socketRef.current.on("connect", () => {
+      console.log("🟢 Socket connected:", "selamat berhasil"),
+        (window.testSocket = socketRef.current);
+    });
     socketRef.current.on("connect_error", (err) =>
       console.error("🔴 Connect error:", err)
     );
