@@ -31,13 +31,12 @@ export default function FormQuestionWithAI() {
   const [mapelList, setMapelList] = useState([]);
 
   useEffect(() => {
-    
     const fetchMapel = async () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_SERVER}/api/mapel`);
         const data = await res.json();
-        
-        setMapelList(data); 
+
+        setMapelList(data);
       } catch (err) {
         console.error("Gagal mengambil data mapel:", err);
       }
@@ -106,7 +105,7 @@ Contoh format:
             "X-Title": "ujian-app",
           },
           body: JSON.stringify({
-            model: "deepseek/deepseek-r1-0528:free",
+            model: "tngtech/deepseek-r1t2-chimera:free",
             messages: [{ role: "user", content: prompt }],
           }),
         }
