@@ -105,7 +105,7 @@ Contoh format:
             "X-Title": "ujian-app",
           },
           body: JSON.stringify({
-            model: "tngtech/deepseek-r1t2-chimera:free",
+            model: "nvidia/nemotron-3.5-lightning:free",
             messages: [{ role: "user", content: prompt }],
           }),
         }
